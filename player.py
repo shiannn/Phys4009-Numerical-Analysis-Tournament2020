@@ -136,8 +136,12 @@ class player_module:
                 dist = ((x-player1_x)**2+(y-player1_y)**2)**0.5
 
                 # if too close, avoid
-                if type == 6 and dist < 0.3:
-                    avoid_dx += (player1_x-x)
+                #if type == 6 and dist < 0.3:
+                #    avoid_dx += (player1_x-x)
+                if type == 8 and dist < 0.5:
+                    avoid_dx = (x-player1_x)
+                    avoid_dy = (y-player1_y)
+                    break
 
                 elif dist < 0.25:
                     ### avoid
