@@ -109,15 +109,21 @@ class player_module:
                     ret = self.getVertical_distance(x,y,dx,dy,player1_x,player1_y)
                     print(ret)
                     if ret < 0.1:
-                        avoid_dx += dy
-                        avoid_dy += -dx
+                        # use the angle of bullet to decide escape direction
+                        if np.arctan2(dy, dx) < 3*np.pi/2: #go right
+                            avoid_dx += 0.3
+                        elif np.arctan2(dy, dx) > 3*np.pi/2: # go left
+                            avoid_dx += -0.3
+                        else:
+                            avoid_dx += dy
+                            avoid_dy += -dx
 
                 if type == 6 and dist < 0.3:
                     avoid_dx += (player1_x-x)
                     avoid_dy += (player1_y-y)
         else:
             self.init_x = 0.5
-            self.init_y = 0.1
+            self.init_y = 0.2
 
             for data in enemy_data:
                 type = data[0] # 0 - bullet, 1..4 - different types of invaders, 5 - ufo, 6 - boss, 7 - rescuecap, 8 - weaponup
