@@ -52,6 +52,11 @@ class player_module:
         vx, vy = v
         return np.arctan2(vy, vx)
     
+    def clockize(self, v1, v2):
+        v1x, v1y = v1
+        v2x, v2y = v2
+        return v1x*v2y - v1y*v2x
+
     def bossCome(self, enemy_data):
         for e in enemy_data:
             if e[0] == 6:
@@ -105,25 +110,31 @@ class player_module:
 
                 # calculate the distance toward player1
                 dist = ((x-player1_x)**2+(y-player1_y)**2)**0.5
-                if type == 0 and dist < 0.5:
+                if (type==7 or type == 8) and dist < 0.5:
+                    avoid_dx = (x-player1_x)
+                    avoid_dy = (y-player1_y)
+                    break
+
+                if type == 0 and dist < 0.25:
                     ret = self.getVertical_distance(x,y,dx,dy,player1_x,player1_y)
                     print(ret)
                     if ret < 0.1:
                         # use the angle of bullet to decide escape direction
-                        if np.arctan2(dy, dx) < 3*np.pi/2: #go right
-                            avoid_dx += 0.3
-                        elif np.arctan2(dy, dx) > 3*np.pi/2: # go left
+                        if self.clockize(np.array([x-player1_x,y-player1_y]), np.array([dx,dy])) < 0: #go right
                             avoid_dx += -0.3
-                        else:
-                            avoid_dx += dy
-                            avoid_dy += -dx
-
+                            avoid_dy = 0
+                        else: # go left
+                            avoid_dx += 0.3
+                            avoid_dy = 0
+                            
+                """
                 if type == 6 and dist < 0.3:
                     avoid_dx += (player1_x-x)
                     avoid_dy += (player1_y-y)
+                """
         else:
             self.init_x = 0.5
-            self.init_y = 0.2
+            self.init_y = 0.15
 
             for data in enemy_data:
                 type = data[0] # 0 - bullet, 1..4 - different types of invaders, 5 - ufo, 6 - boss, 7 - rescuecap, 8 - weaponup
@@ -138,7 +149,8 @@ class player_module:
                 # if too close, avoid
                 #if type == 6 and dist < 0.3:
                 #    avoid_dx += (player1_x-x)
-                if type == 8 and dist < 0.5:
+                # if the rescuecap/weaponup is close enough, try to catch it
+                if (type==7 or type == 8) and dist < 0.5:
                     avoid_dx = (x-player1_x)
                     avoid_dy = (y-player1_y)
                     break
@@ -157,11 +169,6 @@ class player_module:
                         # escape to the opposite direction of enemy
                         avoid_dx += (player1_x-x)
                         avoid_dy += (player1_y-y)
-                    
-                    # if the rescuecap/weaponup is close enough, try to catch it
-                    elif (type==7 or type==8) and dist < 0.25:
-                        avoid_dx += (x-player1_x)
-                        avoid_dy += (y-player1_y)
 
                 elif dist >= 0.25 and dist < 0.9:
                     # if there is an enemy and is close enough, attack it
