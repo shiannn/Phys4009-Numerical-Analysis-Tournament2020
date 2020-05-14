@@ -100,7 +100,7 @@ class player_module:
         if self.bossCome(enemy_data):
             print('boss come')
             self.init_x = 0.4
-            self.init_y = -0.1
+            self.init_y = 0
             for data in enemy_data:
                 type = data[0] # 0 - bullet, 1..4 - different types of invaders, 5 - ufo, 6 - boss, 7 - rescuecap, 8 - weaponup
                 x    = data[1]
@@ -110,7 +110,7 @@ class player_module:
 
                 # calculate the distance toward player1
                 dist = ((x-player1_x)**2+(y-player1_y)**2)**0.5
-                if (type==7 or type == 8) and dist < 0.5:
+                if (type==7 or type == 8) and dist < 0.7 and y <0.6:
                     avoid_dx = (x-player1_x)
                     avoid_dy = (y-player1_y)
                     break
@@ -150,7 +150,7 @@ class player_module:
                 #if type == 6 and dist < 0.3:
                 #    avoid_dx += (player1_x-x)
                 # if the rescuecap/weaponup is close enough, try to catch it
-                if (type==7 or type == 8) and dist < 0.5:
+                if (type==7 or type == 8) and dist < 0.7 and y <0.6:
                     avoid_dx = (x-player1_x)
                     avoid_dy = (y-player1_y)
                     break
@@ -161,8 +161,15 @@ class player_module:
                         ret = self.getVertical_distance(x,y,dx,dy,player1_x,player1_y)
                         print(ret)
                         if ret < 0.1:
-                            avoid_dx += dy
-                            avoid_dy += -dx
+                            temp_dx = dy
+                            temp_dy = -dx
+                            if self.clockize(np.array([dx,dy]), np.array([player1_x - x,player1_y - y]))\
+                            * self.clockize(np.array([dx,dy]), np.array([temp_dx, temp_dy]))< 0: #go right
+                                avoid_dx += -temp_dx
+                                avoid_dy += -temp_dy
+                            else:
+                                avoid_dx += temp_dx
+                                avoid_dy += temp_dy
                     
                     elif (type==1 or type==2 or type==4 or type==5) and dist<0.15:
                         ### mix with avoid bullet?
@@ -186,41 +193,21 @@ class player_module:
                 ### consider the wall with mix vector
                 if player1_y < 0.2:
                     print('player1_y', player1_y)
-                """
-                # if there is an enemy and is close enough, attack it
-                if type!=7 and type!=8 and dist >= 0.25 and dist < 0.6:
-                    speed = abs(x-player1_x)
-                    speed /= 0.01
-                    if speed>1.: speed = 1.
-                    if x>player1_x: angle = 0.    # escape to right
-                    if x<player1_x: angle = np.pi # escape to left
-                    break
 
-                # if the enemy is too close
-                if type!=7 and type!=8 and dist < 0.25:
-                    speed = 1.0
-                    if x<player1_x: angle = 0.    # escape to right
-                    if x>player1_x: angle = np.pi # escape to left
-                    break
-
-                # if the rescuecap/weaponup is close enough, try to catch it
-                if (type==7 or type==8) and dist < 0.25:
-                    speed = 1.0
-                    if x>player1_x: angle = 0.    # run to right
-                    if x<player1_x: angle = np.pi # run to left
-                    break
-                """
         if avoid_dx != 0 or avoid_dy != 0:
             to_dx, to_dy = avoid_dx, avoid_dy
+            speed = 1
         elif attack_dx != 0 or attack_dy != 0:
             to_dx, to_dy = attack_dx, attack_dy
-        else:
+            speed = 0.8
+        else: 
+            # no need to attack / avoid
+            # just go
             to_dx = 0
             to_dy = 0
 
-        print((to_dx, to_dy))
+        print('speed', speed)
         if to_dx != 0 or to_dy != 0:
-            speed = 1
             angle = self.vector2angle(np.array([to_dx, to_dy]))
 
         return speed, angle
