@@ -4,7 +4,7 @@ import matplotlib.path as mpath
 import matplotlib.animation as animation
 
 import player_1 as P1
-import player_1 as P2
+import player_2 as P2
 
 print('Imported Player 1:')
 player1 = P1.player_module()
