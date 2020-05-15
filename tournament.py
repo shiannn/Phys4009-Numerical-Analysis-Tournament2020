@@ -315,6 +315,7 @@ sp_player2 = sprite(0.75,0.2)
 sp_player2.type = 5
 sp_player2.path = 0
 sp_player2.hp = 10
+#sp_player2.enabled =False
 
 # additional information for players
 sp_player1.score = 0

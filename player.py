@@ -119,6 +119,16 @@ class player_module:
                     ret = self.getVertical_distance(x,y,dx,dy,player1_x,player1_y)
                     print(ret)
                     if ret < 0.1:
+                        temp_dx = dy
+                        temp_dy = -dx
+                        if self.clockize(np.array([dx,dy]), np.array([player1_x - x,player1_y - y]))\
+                            * self.clockize(np.array([dx,dy]), np.array([temp_dx, temp_dy]))< 0: #go right
+                            avoid_dx += -temp_dx
+                            avoid_dy += -temp_dy
+                        else:
+                            avoid_dx += temp_dx
+                            avoid_dy += temp_dy
+                        """
                         # use the angle of bullet to decide escape direction
                         if self.clockize(np.array([x-player1_x,y-player1_y]), np.array([dx,dy])) < 0: #go right
                             avoid_dx += -0.3
@@ -126,12 +136,11 @@ class player_module:
                         else: # go left
                             avoid_dx += 0.3
                             avoid_dy = 0
-                            
-                """
+                        """
                 if type == 6 and dist < 0.3:
                     avoid_dx += (player1_x-x)
                     avoid_dy += (player1_y-y)
-                """
+                
         else:
             self.init_x = 0.5
             self.init_y = 0.15
@@ -155,7 +164,7 @@ class player_module:
                     avoid_dy = (y-player1_y)
                     break
 
-                elif dist < 0.25:
+                elif dist < 0.25 and type !=3:
                     ### avoid
                     if type == 0:
                         ret = self.getVertical_distance(x,y,dx,dy,player1_x,player1_y)
@@ -177,7 +186,7 @@ class player_module:
                         avoid_dx += (player1_x-x)
                         avoid_dy += (player1_y-y)
 
-                elif dist >= 0.25 and dist < 0.9:
+                elif (dist >= 0.25 and dist < 0.9) or (type==3 and y > player1_y):
                     # if there is an enemy and is close enough, attack it
                     print('attack!!!')
                     if type!= 0 and type!=6 and type!=7 and type!=8:
