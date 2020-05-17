@@ -9,8 +9,8 @@ class player_module:
     # Please update the banner according to your information
     def banner(self):
         print('-'*40)
-        print('Author: your_name_here')
-        print('ID: bxxxxxxxx')
+        print('Author: Hung-Jui Wang')
+        print('ID: b05502087')
         print('-'*40)
     
     # Decision making function for moving your ship, toward next frame:
@@ -32,7 +32,14 @@ class player_module:
         unit_vector_1 = v1 / np.linalg.norm(v1)
         unit_vector_2 = v2 / np.linalg.norm(v2)
         dot_product = np.dot(unit_vector_1, unit_vector_2)
-        angle = np.arccos(dot_product)
+        if dot_product > 1.:
+            dot_product = 1.
+        if dot_product < -1.:
+            dot_product = -1.
+        try:
+            angle = np.arccos(dot_product)
+        except:
+            print(dot_product)
 
         return angle
 
@@ -98,9 +105,9 @@ class player_module:
         minX = 21474836
         # loop over the enemies and bullets
         if self.bossCome(enemy_data):
-            print('boss come')
+            #print('boss come')
             self.init_x = 0.4
-            self.init_y = 0
+            self.init_y = 0.1
             for data in enemy_data:
                 type = data[0] # 0 - bullet, 1..4 - different types of invaders, 5 - ufo, 6 - boss, 7 - rescuecap, 8 - weaponup
                 x    = data[1]
@@ -117,7 +124,7 @@ class player_module:
 
                 if type == 0 and dist < 0.25:
                     ret = self.getVertical_distance(x,y,dx,dy,player1_x,player1_y)
-                    print(ret)
+                    #print(ret)
                     if ret < 0.1:
                         temp_dx = dy
                         temp_dy = -dx
@@ -168,7 +175,7 @@ class player_module:
                     ### avoid
                     if type == 0:
                         ret = self.getVertical_distance(x,y,dx,dy,player1_x,player1_y)
-                        print(ret)
+                        #print(ret)
                         if ret < 0.1:
                             temp_dx = dy
                             temp_dy = -dx
@@ -188,7 +195,7 @@ class player_module:
 
                 elif (dist >= 0.25 and dist < 0.9) or (type==3 and y > player1_y):
                     # if there is an enemy and is close enough, attack it
-                    print('attack!!!')
+                    #print('attack!!!')
                     if type!= 0 and type!=6 and type!=7 and type!=8:
                         attack_dx = (x-player1_x)
                         attack_dy = self.init_y-player1_y
@@ -201,7 +208,8 @@ class player_module:
                 
                 ### consider the wall with mix vector
                 if player1_y < 0.2:
-                    print('player1_y', player1_y)
+                    #print('player1_y', player1_y)
+                    pass
 
         if avoid_dx != 0 or avoid_dy != 0:
             to_dx, to_dy = avoid_dx, avoid_dy
@@ -215,7 +223,7 @@ class player_module:
             to_dx = 0
             to_dy = 0
 
-        print('speed', speed)
+        #print('speed', speed)
         if to_dx != 0 or to_dy != 0:
             angle = self.vector2angle(np.array([to_dx, to_dy]))
 
