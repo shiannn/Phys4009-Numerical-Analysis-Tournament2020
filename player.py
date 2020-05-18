@@ -5,6 +5,7 @@ class player_module:
     # constructor, allocate any private date here
     def __init__(self):
         self.init_x, self.init_y = -1., -1.
+        self.curDir = 1
 
     # Please update the banner according to your information
     def banner(self):
@@ -106,7 +107,7 @@ class player_module:
         # loop over the enemies and bullets
         if self.bossCome(enemy_data):
             #print('boss come')
-            self.init_x = 0.4
+            self.init_x = 0.5
             self.init_y = 0.1
             for data in enemy_data:
                 type = data[0] # 0 - bullet, 1..4 - different types of invaders, 5 - ufo, 6 - boss, 7 - rescuecap, 8 - weaponup
@@ -117,12 +118,12 @@ class player_module:
 
                 # calculate the distance toward player1
                 dist = ((x-player1_x)**2+(y-player1_y)**2)**0.5
-                if (type==7 or type == 8) and dist < 0.7 and y <0.6:
+                if (type==7 or type == 8) and dist < 0.7 and y <0.6 and player1_weapon==1:
                     avoid_dx = (x-player1_x)
                     avoid_dy = (y-player1_y)
                     break
 
-                if type == 0 and dist < 0.25:
+                if type == 0 and dist < 0.25 and self.angleOf_vectors(np.array([dx,dy]),np.array([player1_x-x,player1_y-y]))<2*np.pi/3:
                     ret = self.getVertical_distance(x,y,dx,dy,player1_x,player1_y)
                     #print(ret)
                     if ret < 0.1:
@@ -166,14 +167,14 @@ class player_module:
                 #if type == 6 and dist < 0.3:
                 #    avoid_dx += (player1_x-x)
                 # if the rescuecap/weaponup is close enough, try to catch it
-                if (type==7 or type == 8) and dist < 0.7 and y <0.6:
+                if (type==7 or type == 8) and dist < 0.7 and y <0.6 and player1_weapon==1:
                     avoid_dx = (x-player1_x)
                     avoid_dy = (y-player1_y)
                     break
 
                 elif dist < 0.25 and type !=3:
                     ### avoid
-                    if type == 0:
+                    if type == 0 and self.angleOf_vectors(np.array([dx,dy]),np.array([player1_x-x,player1_y-y]))<2*np.pi/3:
                         ret = self.getVertical_distance(x,y,dx,dy,player1_x,player1_y)
                         #print(ret)
                         if ret < 0.1:
@@ -197,26 +198,37 @@ class player_module:
                     # if there is an enemy and is close enough, attack it
                     #print('attack!!!')
                     if type!= 0 and type!=6 and type!=7 and type!=8:
-                        attack_dx = (x-player1_x)
-                        attack_dy = self.init_y-player1_y
                         """
                         if abs(x-player1_x) < minX:
                             minX = abs(x-player1_x)
                             attack_dx = (x-player1_x)
                             attack_dy = self.init_y-player1_y
                         """
+                        if player1_weapon == 1:
+                            attack_dx = (x-player1_x)
+                        else:
+                            if self.curDir == 1:
+                                attack_dx = 1
+                            elif self.curDir == -1:
+                                attack_dx = -1
+                        attack_dy = self.init_y-player1_y
                 
                 ### consider the wall with mix vector
                 if player1_y < 0.2:
                     #print('player1_y', player1_y)
                     pass
 
+        if player1_x > 0.7:
+            self.curDir = -1
+        elif player1_x < 0.3:
+            self.curDir = 1
+
         if avoid_dx != 0 or avoid_dy != 0:
             to_dx, to_dy = avoid_dx, avoid_dy
             speed = 1
         elif attack_dx != 0 or attack_dy != 0:
             to_dx, to_dy = attack_dx, attack_dy
-            speed = 0.8
+            speed = 1
         else: 
             # no need to attack / avoid
             # just go
