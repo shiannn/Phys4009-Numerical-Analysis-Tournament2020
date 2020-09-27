@@ -4,7 +4,8 @@ import matplotlib.path as mpath
 import matplotlib.animation as animation
 
 import player as P1
-import player_ver3_2 as P2
+#import player_ver3_2 as P2
+import player_template as P2
 
 print('Imported Player 1:')
 player1 = P1.player_module()
@@ -315,7 +316,7 @@ sp_player2 = sprite(0.75,0.2)
 sp_player2.type = 5
 sp_player2.path = 0
 sp_player2.hp = 10
-sp_player2.enabled =False
+#sp_player2.enabled =False
 
 # additional information for players
 sp_player1.score = 0

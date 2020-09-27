@@ -118,7 +118,12 @@ class player_module:
 
                 # calculate the distance toward player1
                 dist = ((x-player1_x)**2+(y-player1_y)**2)**0.5
-                if (type==7 or type == 8) and dist < 0.7 and y <0.6 and player1_weapon==1:
+                if (type==7) and dist < 0.7 and y < 0.6:
+                    avoid_dx = (x-player1_x)
+                    avoid_dy = (y-player1_y)
+                    break
+
+                if (type == 8) and dist < 0.7 and y <0.6 and player1_weapon<=2:
                     avoid_dx = (x-player1_x)
                     avoid_dy = (y-player1_y)
                     break
@@ -162,12 +167,16 @@ class player_module:
                 
                 # calculate the distance toward player1
                 dist = ((x-player1_x)**2+(y-player1_y)**2)**0.5
+                if (type==7) and dist < 0.2 and y < 0.3:
+                    avoid_dx = (x-player1_x)
+                    avoid_dy = (y-player1_y)
+                    break
 
                 # if too close, avoid
                 #if type == 6 and dist < 0.3:
                 #    avoid_dx += (player1_x-x)
                 # if the rescuecap/weaponup is close enough, try to catch it
-                if (type==7 or type == 8) and dist < 0.7 and y <0.6 and player1_weapon==1:
+                if (type == 8) and dist < 0.7 and y <0.6 and player1_weapon<=2:
                     avoid_dx = (x-player1_x)
                     avoid_dy = (y-player1_y)
                     break
